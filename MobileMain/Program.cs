@@ -1,4 +1,5 @@
 using AccountBL;
+using ScheduleBL;
 using Common.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.ConfigureAccount();
+builder.ConfigureScheduleServices();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
 builder.Services.AddAuthentication(options =>
 {
@@ -82,5 +84,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.AccountDbMigrate();
+
+app.ScheduleDbMigrate();
 
 app.Run();

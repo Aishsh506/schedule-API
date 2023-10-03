@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\AccountBL\AccountBL.csproj" />
+    <ProjectReference Include="..\ScheduleBL\ScheduleBL.csproj" />
   </ItemGroup>
 
 </Project>
