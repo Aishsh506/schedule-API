@@ -8,17 +8,17 @@ namespace MobileMain.Controllers
     [ApiController]
     public class BuildingsController : ControllerBase
     {
-        private readonly IScheduleItemsService _scheduleItemsService;
-        public BuildingsController(IScheduleItemsService scheduleItemsService)
+        private readonly IItemsListService _itemsListService;
+        public BuildingsController(IItemsListService itemsListService)
         {
-            _scheduleItemsService = scheduleItemsService;
+            _itemsListService = itemsListService;
         }
         [HttpGet]
         public IActionResult GetBuildings()
         {
             try
             {
-                return Ok(_scheduleItemsService.GetBuildings());
+                return Ok(_itemsListService.GetBuildings());
             }
             catch (Exception ex)
             {

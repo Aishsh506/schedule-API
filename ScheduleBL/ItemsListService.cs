@@ -3,7 +3,7 @@ using ScheduleDAL;
 
 namespace ScheduleBL
 {
-    public interface IScheduleItemsService
+    public interface IItemsListService
     {
         List<AudienceDTO> GetBuildingAudiences(Guid BuildingId);
         List<BuildingDTO> GetBuildings();
@@ -11,10 +11,10 @@ namespace ScheduleBL
         List<ProfessorDTO> GetProfessors();
         List<SubjectDTO> GetSubjects();
     }
-    public class ScheduleItemsService : IScheduleItemsService
+    public class ItemsListService : IItemsListService
     {
         private readonly ScheduleContext _context;
-        public ScheduleItemsService(ScheduleContext context)
+        public ItemsListService(ScheduleContext context)
         {
             _context = context;
         }

@@ -8,17 +8,17 @@ namespace MobileMain.Controllers
     [ApiController]
     public class ProfessorsController : ControllerBase
     {
-        private readonly IScheduleItemsService _scheduleItemsService;
-        public ProfessorsController(IScheduleItemsService scheduleItemsService)
+        private readonly IItemsListService _itemsListService;
+        public ProfessorsController(IItemsListService itemsListService)
         {
-            _scheduleItemsService = scheduleItemsService;
+            _itemsListService = itemsListService;
         }
         [HttpGet]
         public IActionResult GetProfessors()
         {
             try
             {
-                return Ok(_scheduleItemsService.GetProfessors());
+                return Ok(_itemsListService.GetProfessors());
             }
             catch (Exception ex)
             {

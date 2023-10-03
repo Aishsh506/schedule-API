@@ -9,7 +9,7 @@ namespace ScheduleBL
         public static void ConfigureScheduleServices(this WebApplicationBuilder builder)
         {
             builder.AddContext();
-            builder.Services.AddScoped<IScheduleItemsService, ScheduleItemsService>();
+            builder.Services.AddScoped<IItemsListService, ItemsListService>();
         }
         public static void ScheduleDbMigrate(this WebApplication app)
         {

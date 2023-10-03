@@ -8,17 +8,17 @@ namespace MobileMain.Controllers
     [ApiController]
     public class AudiencesController : ControllerBase
     {
-        private readonly IScheduleItemsService _scheduleItemsService;
-        public AudiencesController(IScheduleItemsService scheduleItemsService)
+        private readonly IItemsListService _itemsListService;
+        public AudiencesController(IItemsListService itemsListService)
         {
-            _scheduleItemsService = scheduleItemsService;
+            _itemsListService = itemsListService;
         }
         [HttpGet]
         public IActionResult GetAudiences([FromQuery] Guid BuildingId)
         {
             try
             {
-                return Ok(_scheduleItemsService.GetBuildingAudiences(BuildingId));
+                return Ok(_itemsListService.GetBuildingAudiences(BuildingId));
             }
             catch (KeyNotFoundException)
             {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\Common\Common.csproj" />
     <ProjectReference Include="..\AccountBL\AccountBL.csproj" />
     <ProjectReference Include="..\ScheduleBL\ScheduleBL.csproj" />
+	<ProjectReference Include="..\WebBL\WebBL.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,8 @@
-﻿namespace ScheduleDAL.Entities
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace ScheduleDAL.Entities
 {
+    [Index(nameof(Name), IsUnique = true)]
     public class Subject
     {
         public Guid Id { get; set; }

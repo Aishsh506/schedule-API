@@ -8,17 +8,17 @@ namespace MobileMain.Controllers
     [ApiController]
     public class GroupsController : ControllerBase
     {
-        private readonly IScheduleItemsService _scheduleItemsService;
-        public GroupsController(IScheduleItemsService scheduleItemsService)
+        private readonly IItemsListService _itemsListService;
+        public GroupsController(IItemsListService itemsListService)
         {
-            _scheduleItemsService = scheduleItemsService;
+            _itemsListService = itemsListService;
         }
         [HttpGet]
         public IActionResult GetGroups()
         {
             try
             {
-                return Ok(_scheduleItemsService.GetGroups());
+                return Ok(_itemsListService.GetGroups());
             }
             catch (Exception ex)
             {

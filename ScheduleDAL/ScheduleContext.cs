@@ -8,7 +8,6 @@ namespace ScheduleDAL
     {
         public ScheduleContext(DbContextOptions<ScheduleContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Subject> Subjects { get; set; }
@@ -22,6 +21,10 @@ namespace ScheduleDAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Building>()
+                .HasMany(e => e.Audiences)
+                .WithOne(e => e.Building);
 
             modelBuilder.Entity<Lesson>()
                 .HasMany(e => e.Groups)

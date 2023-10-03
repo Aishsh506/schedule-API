@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using WebBL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.Co
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.ConfigureAccount();
 builder.ConfigureScheduleServices();
+builder.Services.AddScoped<IAudiencesService, AudiencesService>();
+builder.Services.AddScoped<IBuildingsService, BuildingsService>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
 builder.Services.AddAuthentication(options =>
 {
