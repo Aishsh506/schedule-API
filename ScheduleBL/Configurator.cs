@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using ScheduleDAL;
 
 namespace ScheduleBL
@@ -9,6 +9,7 @@ namespace ScheduleBL
         public static void ConfigureScheduleServices(this WebApplicationBuilder builder)
         {
             builder.AddContext();
+            builder.Services.AddScoped<IScheduleItemsService, ScheduleItemsService>();
         }
         public static void ScheduleDbMigrate(this WebApplication app)
         {
