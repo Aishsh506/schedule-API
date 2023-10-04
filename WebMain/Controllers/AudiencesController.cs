@@ -1,5 +1,7 @@
-﻿using Common.Exceptions;
+﻿using Common.Enums;
+using Common.Exceptions;
 using Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleBL;
 using WebBL;
@@ -35,6 +37,7 @@ namespace MobileMain.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Editor")]
         public async Task<IActionResult> CreateAudience(AudienceModel model)
         {
             try
@@ -56,6 +59,7 @@ namespace MobileMain.Controllers
             }
         }
         [HttpPost, Route("{id}")]
+        [Authorize(Roles = "Editor")]
         public async Task<IActionResult> EditAudience([FromRoute] Guid id, [FromBody] AudienceEditModel model)
         {
             try
@@ -77,6 +81,7 @@ namespace MobileMain.Controllers
             }
         }
         [HttpDelete, Route("{id}")]
+        [Authorize(Roles = "Editor")]
         public async Task<IActionResult> DeleteAudience([FromRoute] Guid id)
         {
             try

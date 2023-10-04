@@ -12,6 +12,7 @@ namespace AccountBL
         {
             builder.AddContext();
             builder.Services.AddScoped<IAccountService, AccountService>();
+            builder.Services.AddScoped<IRolesService, RolesService>(); //Temp
             builder.Services.AddIdentity<AppUser, IdentityRole>()
                 .AddEntityFrameworkStores<AccountContext>()
                 .AddTokenProvider("App", typeof(DataProtectorTokenProvider<AppUser>));

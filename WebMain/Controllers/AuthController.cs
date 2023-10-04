@@ -89,6 +89,10 @@ namespace MobileMain.Controllers
         public async Task<IActionResult> GetAccount()
         {
             var id = HttpContext.User.FindFirstValue(ClaimTypes.Uri);
+            if (id == null)
+            {
+                return BadRequest("Invalid token");
+            }
             try
             {
                 return Ok(await _accountService.GetAccount(id));

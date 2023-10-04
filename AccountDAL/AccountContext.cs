@@ -9,7 +9,6 @@ namespace AccountDAL
     {
         public AccountContext(DbContextOptions<AccountContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

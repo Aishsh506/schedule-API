@@ -25,7 +25,8 @@ namespace WebBL
         {
             var professor = new Professor
             {
-                FullName = model.ShortName
+                FullName = model.FullName,
+                ShortName = model.ShortName,
             };
 
             try

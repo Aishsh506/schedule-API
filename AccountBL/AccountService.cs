@@ -1,6 +1,5 @@
 ﻿using AccountBL.DTO;
 using AccountBL.Models;
-using AccountDAL;
 using AccountDAL.Entities;
 using Common.Exceptions;
 using Common.Models;
@@ -24,12 +23,10 @@ namespace AccountBL
     public class AccountService : IAccountService
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly AccountContext _context;
         private readonly IOptions<JwtOptions> _jwtOptions;
-        public AccountService(UserManager<AppUser> userManager, AccountContext context, IOptions<JwtOptions> jwtOptions)
+        public AccountService(UserManager<AppUser> userManager, IOptions<JwtOptions> jwtOptions)
         {
             _userManager = userManager;
-            _context = context;
             _jwtOptions = jwtOptions;
         }
         public async Task<TokenResponseDTO> Register(RegistrationModel data)
@@ -113,7 +110,9 @@ namespace AccountBL
         public async Task<AccountDTO> GetAccount(string userId)
         {
             var user = await FindUserById(userId);
-            return new AccountDTO(user);
+            var DTO = new AccountDTO(user);
+            DTO.Role = await _userManager.GetRolesAsync(user) as List<string>;
+            return DTO;
         }
         private async Task<AppUser> FindUserById(string userId)
         {
@@ -134,19 +133,19 @@ namespace AccountBL
             return user;
         }
 
-        private string? GetUserIdFromToken(string token)
+        private string GetUserIdFromToken(string token)
         {
             var jwt = new JwtSecurityTokenHandler().ReadToken(token) as JwtSecurityToken;
             if (jwt == null)
             {
                 throw new InvalidDataException();
             }
-            var emailClaim = jwt.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Uri);
-            if (emailClaim == null)
+            var idClaim = jwt.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Uri);
+            if (idClaim == null)
             {
                 throw new InvalidDataException();
             }
-            return emailClaim.Value;
+            return idClaim.Value;
         }
         private async Task<TokenResponseDTO> GenerateTokenResponseDTO(AppUser user, string[] roles)
         {
