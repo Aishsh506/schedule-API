@@ -17,6 +17,9 @@ builder.ConfigureAccount();
 builder.ConfigureScheduleServices();
 builder.Services.AddScoped<IAudiencesService, AudiencesService>();
 builder.Services.AddScoped<IBuildingsService, BuildingsService>();
+builder.Services.AddScoped<IGroupsService, GroupsService>();
+builder.Services.AddScoped<ISubjectsService, SubjectsService>();
+builder.Services.AddScoped<IProfessorsService, ProfessorsService>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
 builder.Services.AddAuthentication(options =>
 {

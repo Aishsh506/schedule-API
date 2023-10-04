@@ -8,29 +8,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebBL
 {
-    public interface IBuildingsService
+    public interface ISubjectsService
     {
-        Task<IdDTO> CreateBuilding(BuildingModel model);
-        Task EditBuilding(Guid id, BuildingModel model);
-        Task DeleteBuilding(Guid id);
+        Task<IdDTO> CreateSubject(SubjectModel model);
+        Task EditSubject(Guid id, SubjectModel model);
+        Task DeleteSubject(Guid id);
     }
-    public class BuildingsService : IBuildingsService
+    public class SubjectsService : ISubjectsService
     {
         private readonly ScheduleContext _context;
-        public BuildingsService(ScheduleContext context)
+        public SubjectsService(ScheduleContext context)
         {
             _context = context;
         }
-        public async Task<IdDTO> CreateBuilding(BuildingModel model)
+        public async Task<IdDTO> CreateSubject(SubjectModel model)
         {
-            var building = new Building
+            var subject = new Subject
             {
                 Name = model.Name
             };
 
             try
             {
-                await _context.Buildings.AddAsync(building);
+                await _context.Subjects.AddAsync(subject);
                 await _context.SaveChangesAsync();
             }
             catch(DbUpdateException e) when(e.InnerException is SqlException)
@@ -42,17 +42,17 @@ namespace WebBL
                     default: throw;
                 }
             }
-            return new IdDTO(building.Id);
+            return new IdDTO(subject.Id);
         }
-        public async Task EditBuilding(Guid id, BuildingModel model)
+        public async Task EditSubject(Guid id, SubjectModel model)
         {
-            var building = _context.Buildings.Find(id);
-            if (building == null)
+            var subject = _context.Subjects.Find(id);
+            if (subject == null)
             {
                 throw new KeyNotFoundException();
             }
 
-            building.Name = model.Name;
+            subject.Name = model.Name;
             try
             {
                 await _context.SaveChangesAsync();
@@ -67,14 +67,14 @@ namespace WebBL
                 }
             }
         }
-        public async Task DeleteBuilding(Guid id)
+        public async Task DeleteSubject(Guid id)
         {
-            var building = _context.Buildings.Find(id);
-            if (building == null)
+            var subject = _context.Subjects.Find(id);
+            if (subject == null)
             {
                 throw new KeyNotFoundException();
             }
-            _context.Buildings.Remove(building);
+            _context.Subjects.Remove(subject);
             await _context.SaveChangesAsync();
         }
     }

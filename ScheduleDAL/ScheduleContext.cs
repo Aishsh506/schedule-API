@@ -25,7 +25,6 @@ namespace ScheduleDAL
             modelBuilder.Entity<Building>()
                 .HasMany(e => e.Audiences)
                 .WithOne(e => e.Building);
-
             modelBuilder.Entity<Lesson>()
                 .HasMany(e => e.Groups)
                 .WithMany(e => e.Lessons)

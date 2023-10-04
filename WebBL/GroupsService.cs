@@ -8,29 +8,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebBL
 {
-    public interface IBuildingsService
+    public interface IGroupsService
     {
-        Task<IdDTO> CreateBuilding(BuildingModel model);
-        Task EditBuilding(Guid id, BuildingModel model);
-        Task DeleteBuilding(Guid id);
+        Task<IdDTO> CreateGroup(GroupModel model);
+        Task EditGroup(Guid id, GroupModel model);
+        Task DeleteGroup(Guid id);
     }
-    public class BuildingsService : IBuildingsService
+    public class GroupsService : IGroupsService
     {
         private readonly ScheduleContext _context;
-        public BuildingsService(ScheduleContext context)
+        public GroupsService(ScheduleContext context)
         {
             _context = context;
         }
-        public async Task<IdDTO> CreateBuilding(BuildingModel model)
+        public async Task<IdDTO> CreateGroup(GroupModel model)
         {
-            var building = new Building
+            var group = new Group
             {
                 Name = model.Name
             };
 
             try
             {
-                await _context.Buildings.AddAsync(building);
+                await _context.Groups.AddAsync(group);
                 await _context.SaveChangesAsync();
             }
             catch(DbUpdateException e) when(e.InnerException is SqlException)
@@ -42,17 +42,17 @@ namespace WebBL
                     default: throw;
                 }
             }
-            return new IdDTO(building.Id);
+            return new IdDTO(group.Id);
         }
-        public async Task EditBuilding(Guid id, BuildingModel model)
+        public async Task EditGroup(Guid id, GroupModel model)
         {
-            var building = _context.Buildings.Find(id);
-            if (building == null)
+            var group = _context.Groups.Find(id);
+            if (group == null)
             {
                 throw new KeyNotFoundException();
             }
 
-            building.Name = model.Name;
+            group.Name = model.Name;
             try
             {
                 await _context.SaveChangesAsync();
@@ -67,14 +67,14 @@ namespace WebBL
                 }
             }
         }
-        public async Task DeleteBuilding(Guid id)
+        public async Task DeleteGroup(Guid id)
         {
-            var building = _context.Buildings.Find(id);
-            if (building == null)
+            var group = _context.Groups.Find(id);
+            if (group == null)
             {
                 throw new KeyNotFoundException();
             }
-            _context.Buildings.Remove(building);
+            _context.Groups.Remove(group);
             await _context.SaveChangesAsync();
         }
     }
