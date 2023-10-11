@@ -8,5 +8,6 @@ namespace ScheduleDAL.Entities
         public Guid Id { get; set; }
         public string Name { get; set; }
         public ICollection<Lesson> Lessons { get; set; }
+        public ICollection<BookedLesson> BookedLessons { get; set; }
     }
 }

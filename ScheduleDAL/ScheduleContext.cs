@@ -16,6 +16,8 @@ namespace ScheduleDAL
         public DbSet<Audience> Audiences { get; set; }
         public DbSet<Professor> Professors { get; set; }
         public DbSet<LessonGroup> LessonGroups { get; set; }
+        public DbSet<BookedLesson> BookedLessons { get; set; }
+        public DbSet<BookedLessonGroup> BookedLessonGroups { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -27,6 +29,10 @@ namespace ScheduleDAL
                 .HasMany(e => e.Groups)
                 .WithMany(e => e.Lessons)
                 .UsingEntity<LessonGroup>();
+            modelBuilder.Entity<BookedLesson>()
+                .HasMany(e => e.Groups)
+                .WithMany(e => e.BookedLessons)
+                .UsingEntity<BookedLessonGroup>();
 
             modelBuilder.Entity<Lesson>()
                 .Property(e => e.LessonType)
@@ -36,6 +42,8 @@ namespace ScheduleDAL
                 .ToTable(t => t.HasCheckConstraint("Timeslot", "Timeslot > 0 AND Timeslot < 8"))
                 .ToTable(t => t.HasCheckConstraint("DayOfWeek", "DayOfWeek > 0 AND DayOfWeek < 6"))
                 .ToTable(t => t.HasCheckConstraint("StartDate", "StartDate <= EndDate"));
+            modelBuilder.Entity<BookedLesson>()
+                .ToTable(t => t.HasCheckConstraint("Timeslot", "Timeslot > 0 AND Timeslot < 8"));
         }
     }
 }
