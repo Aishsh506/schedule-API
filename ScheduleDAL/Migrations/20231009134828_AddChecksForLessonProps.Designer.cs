@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScheduleDAL;
 
@@ -11,9 +12,11 @@ using ScheduleDAL;
 namespace ScheduleDAL.Migrations
 {
     [DbContext(typeof(ScheduleContext))]
-    partial class ScheduleContextModelSnapshot : ModelSnapshot
+    [Migration("20231009134828_AddChecksForLessonProps")]
+    partial class AddChecksForLessonProps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -143,12 +146,7 @@ namespace ScheduleDAL.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("LessonGroups", t =>
-                        {
-                            t.HasTrigger("LessonGroup_DELETE");
-                        });
-
-                    b.ToSqlQuery("CREATE TRIGGER LessonGroup_DELETE ON LessonGroups AFTER DELETE AS IF NOT EXISTS (SELECT 1 FROM LessonGroups WHERE LessonId = (SELECT LessonId FROM deleted)) DELETE FROM Lessons WHERE Id = (SELECT LessonId FROM deleted)");
+                    b.ToTable("LessonGroups");
                 });
 
             modelBuilder.Entity("ScheduleDAL.Entities.Professor", b =>

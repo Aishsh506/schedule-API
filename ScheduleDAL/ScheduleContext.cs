@@ -15,8 +15,6 @@ namespace ScheduleDAL
         public DbSet<Building> Buildings { get; set; }
         public DbSet<Audience> Audiences { get; set; }
         public DbSet<Professor> Professors { get; set; }
-        public DbSet<SingularLesson> SingularLessons { get; set; }
-        public DbSet<WeeklyLesson> WeeklyLessons { get; set; }
         public DbSet<LessonGroup> LessonGroups { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +31,11 @@ namespace ScheduleDAL
             modelBuilder.Entity<Lesson>()
                 .Property(e => e.LessonType)
                 .HasDefaultValue(LessonType.Other);
+
+            modelBuilder.Entity<Lesson>()
+                .ToTable(t => t.HasCheckConstraint("Timeslot", "Timeslot > 0 AND Timeslot < 8"))
+                .ToTable(t => t.HasCheckConstraint("DayOfWeek", "DayOfWeek > 0 AND DayOfWeek < 6"))
+                .ToTable(t => t.HasCheckConstraint("StartDate", "StartDate <= EndDate"));
         }
     }
 }

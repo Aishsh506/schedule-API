@@ -50,7 +50,7 @@ namespace MobileMain.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ex));
             }
         }
-        [HttpPost, Route("{id}")]
+        [HttpPut, Route("{id}")]
         [Authorize(Roles = "Editor")]
         public async Task<IActionResult> EditProfessor([FromRoute] Guid id, [FromBody] ProfessorModel model)
         {

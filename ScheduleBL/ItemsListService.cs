@@ -1,4 +1,4 @@
-﻿using ScheduleBL.DTO;
+﻿using Common.DTO;
 using ScheduleDAL;
 
 namespace ScheduleBL
@@ -28,31 +28,31 @@ namespace ScheduleBL
 
             return _context.Audiences
                 .Where(x => x.Building == building)
-                .Select(x => new AudienceDTO(x))
+                .Select(x => x.ToDTO(building.Name))
                 .ToList();
         }
         public List <BuildingDTO> GetBuildings()
         {
             return _context.Buildings
-                .Select(x => new BuildingDTO(x))
+                .Select(x => x.ToDTO())
                 .ToList();
         }
         public List<GroupDTO> GetGroups()
         {
             return _context.Groups
-                .Select(x => new GroupDTO(x))
+                .Select(x => x.ToDTO())
                 .ToList();
         }
         public List<ProfessorDTO> GetProfessors()
         {
             return _context.Professors
-                .Select(x => new ProfessorDTO(x))
+                .Select(x => x.ToDTO())
                 .ToList();
         }
         public List<SubjectDTO> GetSubjects()
         {
             return _context.Subjects
-                .Select(x => new SubjectDTO(x))
+                .Select(x => x.ToDTO())
                 .ToList();
         }
     }

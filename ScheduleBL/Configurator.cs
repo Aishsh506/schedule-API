@@ -10,6 +10,7 @@ namespace ScheduleBL
         {
             builder.AddContext();
             builder.Services.AddScoped<IItemsListService, ItemsListService>();
+            builder.Services.AddScoped<IScheduleProviderService, ScheduleProviderService>();
         }
         public static void ScheduleDbMigrate(this WebApplication app)
         {
