@@ -19,6 +19,7 @@ namespace AccountBL
         Task<TokenResponseDTO?> Login(LoginModel data);
         Task<TokenResponseDTO?> Refresh(string token);
         Task<AccountDTO> GetAccount(string userId);
+        Task Logout(string userId);
     }
     public class AccountService : IAccountService
     {
@@ -79,7 +80,7 @@ namespace AccountBL
             }
 
             var tokenExpired = false;
-            if (await _userManager.VerifyUserTokenAsync(user, "App", "Refresh", storedToken))
+            if (!ValidateToken(storedToken))
             {
                 await _userManager.RemoveAuthenticationTokenAsync(user, "App", "Refresh");
                 tokenExpired = true;
@@ -131,6 +132,11 @@ namespace AccountBL
                 throw new KeyNotFoundException();
             }
             return user;
+        }
+        public async Task Logout(string userId)
+        {
+            var user = await FindUserById(userId);
+            await _userManager.RemoveAuthenticationTokenAsync(user, "App", "Refresh");
         }
 
         private string GetUserIdFromToken(string token)
@@ -199,6 +205,30 @@ namespace AccountBL
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
 
             return token;
+        }
+        private bool ValidateToken(string token)
+        {
+            var validationParameters = new TokenValidationParameters
+            {
+
+                ValidateIssuer = true,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidIssuer = _jwtOptions.Value.ValidIssuer,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Value.Secret))
+            };
+
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+
+                return true;
+            }
+            catch (SecurityTokenValidationException)
+            {
+                return false;
+            }
         }
     }
 }

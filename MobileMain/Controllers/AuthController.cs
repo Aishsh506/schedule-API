@@ -101,14 +101,47 @@ namespace MobileMain.Controllers
         [Authorize]
         [HttpGet, Route("account")]
         [ProducesResponseType(typeof(AccountDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
         [ProducesResponseType(401)]
         [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> GetAccount()
         {
             var id = HttpContext.User.FindFirstValue(ClaimTypes.Uri);
+            if (id == null)
+            {
+                return BadRequest(new ErrorResponse("Invalid token"));
+            }
             try
             {
                 return Ok(await _accountService.GetAccount(id));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ex));
+            }
+        }
+        [Authorize]
+        [HttpPost, Route("logout")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 401)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public async Task<IActionResult> Logout()
+        {
+            var id = HttpContext.User.FindFirstValue(ClaimTypes.Uri);
+            if (id == null)
+            {
+                return BadRequest(new ErrorResponse("Invalid token"));
+            }
+            try
+            {
+                await _accountService.Logout(id);
+                return Ok();
+            }
+            catch(KeyNotFoundException ex)
+            {
+                return NotFound(new ErrorResponse("Could not find the user"));
             }
             catch (Exception ex)
             {
