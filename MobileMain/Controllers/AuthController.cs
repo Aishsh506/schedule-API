@@ -1,4 +1,5 @@
 ﻿using AccountBL;
+using AccountBL.DTO;
 using AccountBL.Models;
 using Common.Exceptions;
 using Common.Models;
@@ -20,6 +21,11 @@ namespace MobileMain.Controllers
         }
 
         [HttpPost, Route("register")]
+        [ProducesResponseType(typeof(TokenResponseDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ErrorResponse), 409)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> Register(RegistrationModel data)
         {
             try
@@ -40,6 +46,10 @@ namespace MobileMain.Controllers
             }
         }
         [HttpPost, Route("login")]
+        [ProducesResponseType(typeof(TokenResponseDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> Login(LoginModel data)
         {
             try
@@ -53,7 +63,7 @@ namespace MobileMain.Controllers
             }
             catch (KeyNotFoundException)
             {
-                return NotFound(new ErrorResponse("Incorrect password or email"));
+                return BadRequest(new ErrorResponse("Incorrect password or email"));
             }
             catch (Exception ex)
             {
@@ -61,6 +71,10 @@ namespace MobileMain.Controllers
             }
         }
         [HttpPost, Route("refresh")]
+        [ProducesResponseType(typeof(TokenResponseDTO), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 400)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> Refresh(RefreshToken data)
         {
             try
@@ -86,6 +100,9 @@ namespace MobileMain.Controllers
         }
         [Authorize]
         [HttpGet, Route("account")]
+        [ProducesResponseType(typeof(AccountDTO), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> GetAccount()
         {
             var id = HttpContext.User.FindFirstValue(ClaimTypes.Uri);

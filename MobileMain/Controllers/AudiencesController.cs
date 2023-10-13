@@ -1,4 +1,5 @@
-﻿using Common.Models;
+﻿using Common.DTO;
+using Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using ScheduleBL;
 
@@ -14,15 +15,13 @@ namespace MobileMain.Controllers
             _itemsListService = itemsListService;
         }
         [HttpGet]
-        public IActionResult GetAudiences([FromQuery] Guid BuildingId)
+        [ProducesResponseType(typeof(List<AudienceDTO>), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public IActionResult GetAudiences()
         {
             try
             {
-                return Ok(_itemsListService.GetBuildingAudiences(BuildingId));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new ErrorResponse("Could not found building with given id"));
+                return Ok(_itemsListService.GetAudiences());
             }
             catch (Exception ex)
             {

@@ -74,7 +74,7 @@ loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-app.UseSwagger();
+    app.UseSwagger();
     app.UseSwaggerUI();
 //}
 

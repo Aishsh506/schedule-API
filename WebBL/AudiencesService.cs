@@ -25,8 +25,7 @@ namespace WebBL
         {
             var audience = new Audience
             {
-                Name = model.Name,
-                BuildingId = model.BuildingId
+                Name = model.Name
             };
 
             try

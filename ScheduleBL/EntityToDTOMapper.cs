@@ -9,7 +9,7 @@ namespace ScheduleBL
         {
             return new LessonDTO
             {
-                LessonId = lesson.Id,
+                Id = lesson.Id,
                 DayOfWeek = lesson.DayOfWeek,
                 StartDate = lesson.StartDate,
                 EndDate = lesson.EndDate,
@@ -30,13 +30,12 @@ namespace ScheduleBL
                 ShortName = professor.ShortName
             };
         }
-        public static AudienceDTO ToDTO(this Audience audience, string? buildingName = null)
+        public static AudienceDTO ToDTO(this Audience audience)
         {
             return new AudienceDTO
             {
                 Id = audience.Id,
-                Name = audience.Name,
-                BuildingName = buildingName ?? audience.Building?.Name
+                Name = audience.Name
             };
         }
         public static SubjectDTO ToDTO(this Subject subject)
@@ -53,14 +52,6 @@ namespace ScheduleBL
             {
                 Id = group.Id,
                 Name = group.Name
-            };
-        }
-        public static BuildingDTO ToDTO(this Building building)
-        {
-            return new BuildingDTO
-            {
-                Id = building.Id,
-                Name = building.Name
             };
         }
     }

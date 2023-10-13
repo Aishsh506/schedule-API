@@ -12,7 +12,6 @@ namespace ScheduleDAL
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Group> Groups { get; set; }
-        public DbSet<Building> Buildings { get; set; }
         public DbSet<Audience> Audiences { get; set; }
         public DbSet<Professor> Professors { get; set; }
         public DbSet<LessonGroup> LessonGroups { get; set; }
@@ -22,9 +21,6 @@ namespace ScheduleDAL
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Building>()
-                .HasMany(e => e.Audiences)
-                .WithOne(e => e.Building);
             modelBuilder.Entity<Lesson>()
                 .HasMany(e => e.Groups)
                 .WithMany(e => e.Lessons)

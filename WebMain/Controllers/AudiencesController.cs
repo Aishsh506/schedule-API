@@ -1,4 +1,5 @@
-﻿using Common.Enums;
+﻿using Common.DTO;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -21,15 +22,13 @@ namespace MobileMain.Controllers
             _audiencesService = audiencesService;
         }
         [HttpGet]
-        public IActionResult GetAudiences([FromQuery] Guid BuildingId)
+        [ProducesResponseType(typeof(List<AudienceDTO>), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
+        public IActionResult GetAudiences()
         {
             try
             {
-                return Ok(_itemsListService.GetBuildingAudiences(BuildingId));
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new ErrorResponse("Could not found building with given id"));
+                return Ok(_itemsListService.GetAudiences());
             }
             catch (Exception ex)
             {
@@ -38,6 +37,12 @@ namespace MobileMain.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Editor")]
+        [ProducesResponseType(typeof(IdDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(typeof(ErrorResponse), 409)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> CreateAudience(AudienceModel model)
         {
             try
@@ -45,13 +50,9 @@ namespace MobileMain.Controllers
                 var DTO = await _audiencesService.CreateAudience(model);
                 return Created(DTO.Id.ToString(), DTO);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new ErrorResponse("Could not find the building with given id"));
-            }
             catch (DataConflictException)
             {
-                return BadRequest(new ErrorResponse("An audience with the given name has already been created for the building"));
+                return Conflict(new ErrorResponse("An audience with the given name has already been created for the building"));
             }
             catch (Exception ex)
             {
@@ -60,6 +61,13 @@ namespace MobileMain.Controllers
         }
         [HttpPut, Route("{id}")]
         [Authorize(Roles = "Editor")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(typeof(ErrorResponse), 409)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> EditAudience([FromRoute] Guid id, [FromBody] AudienceEditModel model)
         {
             try
@@ -73,7 +81,7 @@ namespace MobileMain.Controllers
             }
             catch (DataConflictException)
             {
-                return BadRequest(new ErrorResponse("An audience with the given name has already been created for the building"));
+                return Conflict(new ErrorResponse("An audience with the given name has already been created for the building"));
             }
             catch (Exception ex)
             {
@@ -82,6 +90,12 @@ namespace MobileMain.Controllers
         }
         [HttpDelete, Route("{id}")]
         [Authorize(Roles = "Editor")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> DeleteAudience([FromRoute] Guid id)
         {
             try

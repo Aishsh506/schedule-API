@@ -1,6 +1,7 @@
 ﻿using Common.DTO;
 using Common.Enums;
 using Common.Exceptions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using ScheduleBL.DTO;
 using ScheduleBL.Models;
@@ -13,7 +14,8 @@ namespace ScheduleBL
     {
         BookingRequestDTO[] GetUserRequests(Guid userId);
         BookingRequestDTO[] GetNewRequests();
-        Task CreateRequest(Guid userId, BookingModel bookingModel);
+        AudienceDTO[] GetAvailableAudiences(DateTime date, uint timeslot);
+        Task<IdDTO> CreateRequest(Guid userId, BookingModel bookingModel);
         Task CancelRequest(Guid userId, Guid bookedLessonId);
         Task ModerateRequest(Guid bookedLessonId, bool approved);
     }
@@ -31,7 +33,7 @@ namespace ScheduleBL
                 .Include(l => l.Groups)
                 .Include(l => l.Audience)
                 .OrderBy(l => l.Status)
-                .ToList();
+                .ToArray();
             return bookedLessons.Select(l => new BookingRequestDTO
             {
                 Id = l.Id,
@@ -51,7 +53,7 @@ namespace ScheduleBL
                 .Include(l => l.Groups)
                 .Include(l => l.Audience)
                 .OrderBy(l => l.Status)
-                .ToList();
+                .ToArray();
             return bookedLessons.Select(l => new BookingRequestDTO
             {
                 Id = l.Id,
@@ -64,24 +66,40 @@ namespace ScheduleBL
                 Groups = l.Groups != null ? l.Groups.Select(g => g.ToDTO()).ToArray() : Array.Empty<GroupDTO>()
             }).ToArray();
         }
-        public async Task CreateRequest(Guid userId, BookingModel model)
+        public AudienceDTO[] GetAvailableAudiences(DateTime date, uint timeslot)
         {
-            var matchingLessons = _context.Lessons
-                .Where(l =>
+            if (timeslot < 1 && timeslot > 7)
+            {
+                throw new ArgumentOutOfRangeException(nameof(timeslot));
+            }
+            var available = _context.Audiences.Where(a =>
+                !_context.Lessons.Any(l =>
+                    l.Audience == a &&
+                    l.StartDate <= date &&
+                    l.EndDate >= date &&
+                    l.DayOfWeek == date.DayOfWeek &&
+                    l.Timeslot == timeslot) &&
+                !_context.BookedLessons.Any(b =>
+                    b.Date == date &&
+                    b.Timeslot == timeslot &&
+                    b.Status == ScheduleDAL.Enums.BookStatus.Approved &&
+                    b.Audience == a)).ToArray();
+            return available.Select(a => a.ToDTO()).ToArray();
+        }
+        public async Task<IdDTO> CreateRequest(Guid userId, BookingModel model)
+        {
+            if (_context.Lessons.Any(l =>
                     l.StartDate <= model.Date &&
                     l.EndDate >= model.Date &&
                     l.DayOfWeek == model.Date.DayOfWeek &&
-                    l.Timeslot == model.Timeslot)
-            .Include(l => l.Groups)
-            .ToList();
-
-            var sameAud = matchingLessons.FirstOrDefault(l => l.AudienceId == model.AudienceId);
-            if (sameAud != null)
+                    l.Timeslot == model.Timeslot &&
+                    l.AudienceId == model.AudienceId))
             {
-                throw new DataConflictException(ScheduleItems.Audience, sameAud.Id);
+                throw new DataConflictException(ScheduleItems.Audience);
             }
 
             if (_context.BookedLessons.Any(l =>
+                l.Status == ScheduleDAL.Enums.BookStatus.Approved &&
                 l.Date == model.Date &&
                 l.Timeslot == model.Timeslot &&
                 l.AudienceId == model.AudienceId))
@@ -98,16 +116,11 @@ namespace ScheduleBL
                 AudienceId = model.AudienceId
             };
 
+            await _context.BookedLessons.AddAsync(bookedLesson);
             if (model.GroupIds != null)
             {
                 foreach (var groupId in model.GroupIds)
                 {
-                    var sameGroup = matchingLessons.FirstOrDefault(l =>
-                        l.Groups.Select(g => g.Id).Contains(groupId));
-                    if (sameGroup != null)
-                    {
-                        throw new DataConflictException(ScheduleItems.Group, sameGroup.Id);
-                    }
                     await _context.BookedLessonGroups.AddAsync(new BookedLessonGroup
                     {
                         BookedLesson = bookedLesson,
@@ -115,8 +128,29 @@ namespace ScheduleBL
                     });
                 }
             }
-            await _context.BookedLessons.AddAsync(bookedLesson);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException e) when (e.InnerException is SqlException)
+            {
+                var sqlEx = (SqlException)e.InnerException;
+                if (sqlEx.Number != 547)
+                {
+                    throw;
+                }
+                var items = new string[] { "Audience", "Group" };
+                foreach (var item in items)
+                {
+                    if (sqlEx.Message.Contains(item))
+                    {
+                        throw new KeyNotFoundException(item.ToLower());
+                    }
+                }
+                throw;
+            }
+            return new IdDTO(bookedLesson.Id);
         }
         public async Task CancelRequest(Guid userId, Guid bookedLessonId)
         {

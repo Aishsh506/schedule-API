@@ -1,4 +1,5 @@
-﻿using Common.Enums;
+﻿using Common.DTO;
+using Common.Enums;
 using Common.Exceptions;
 using Common.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +22,8 @@ namespace MobileMain.Controllers
             _subjectsService = subjectsService;
         }
         [HttpGet]
+        [ProducesResponseType(typeof(List<SubjectDTO>), 200)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public IActionResult GetSubjects()
         {
             try
@@ -34,6 +37,12 @@ namespace MobileMain.Controllers
         }
         [HttpPost]
         [Authorize(Roles = "Editor")]
+        [ProducesResponseType(typeof(IdDTO), 201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(typeof(ErrorResponse), 409)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> CreateSubject(SubjectModel model)
         {
             try
@@ -43,7 +52,7 @@ namespace MobileMain.Controllers
             }
             catch (DataConflictException)
             {
-                return BadRequest(new ErrorResponse("The given name conflicts with existing subject name"));
+                return Conflict(new ErrorResponse("The given name conflicts with existing subject name"));
             }
             catch (Exception ex)
             {
@@ -52,6 +61,13 @@ namespace MobileMain.Controllers
         }
         [HttpPut, Route("{id}")]
         [Authorize(Roles = "Editor")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(typeof(ErrorResponse), 409)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> EditSubject([FromRoute] Guid id, [FromBody] SubjectModel model)
         {
             try
@@ -65,7 +81,7 @@ namespace MobileMain.Controllers
             }
             catch (DataConflictException)
             {
-                return BadRequest(new ErrorResponse("The given name conflicts with existing subject name"));
+                return Conflict(new ErrorResponse("The given name conflicts with existing subject name"));
             }
             catch (Exception ex)
             {
@@ -74,6 +90,12 @@ namespace MobileMain.Controllers
         }
         [HttpDelete, Route("{id}")]
         [Authorize(Roles = "Editor")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(403)]
+        [ProducesResponseType(typeof(ErrorResponse), 404)]
+        [ProducesResponseType(typeof(ErrorResponse), 500)]
         public async Task<IActionResult> DeleteSubject([FromRoute] Guid id)
         {
             try

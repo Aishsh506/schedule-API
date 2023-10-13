@@ -5,8 +5,7 @@ namespace ScheduleBL
 {
     public interface IItemsListService
     {
-        List<AudienceDTO> GetBuildingAudiences(Guid BuildingId);
-        List<BuildingDTO> GetBuildings();
+        List<AudienceDTO> GetAudiences();
         List<GroupDTO> GetGroups();
         List<ProfessorDTO> GetProfessors();
         List<SubjectDTO> GetSubjects();
@@ -18,22 +17,9 @@ namespace ScheduleBL
         {
             _context = context;
         }
-        public List<AudienceDTO> GetBuildingAudiences(Guid BuildingId)
+        public List<AudienceDTO> GetAudiences()
         {
-            var building = _context.Buildings.FirstOrDefault(x => x.Id == BuildingId);
-            if (building == null)
-            {
-                throw new KeyNotFoundException();
-            }
-
             return _context.Audiences
-                .Where(x => x.Building == building)
-                .Select(x => x.ToDTO(building.Name))
-                .ToList();
-        }
-        public List <BuildingDTO> GetBuildings()
-        {
-            return _context.Buildings
                 .Select(x => x.ToDTO())
                 .ToList();
         }

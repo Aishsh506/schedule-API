@@ -37,7 +37,7 @@ namespace ScheduleBL
             _context.Entry(lesson).Collection(l => l.Groups).Load();
             return new LessonDTO
             {
-                LessonId = lesson.Id,
+                Id = lesson.Id,
                 DayOfWeek = lesson.DayOfWeek,
                 StartDate = lesson.StartDate,
                 EndDate = lesson.EndDate,
@@ -113,6 +113,10 @@ namespace ScheduleBL
                         throw new KeyNotFoundException(item.ToLower());
                     }
                 }
+                if (sqlEx.Message.Contains("CHECK"))
+                {
+                    throw new ArgumentException();
+                }
                 throw;
             }
             return new IdDTO(lesson.Id);
@@ -174,6 +178,10 @@ namespace ScheduleBL
                         throw new KeyNotFoundException(item.ToLower());
                     }
                 }
+                if (sqlEx.Message.Contains("CHECK"))
+                {
+                    throw new ArgumentException();
+                }
                 throw;
             }
         }
@@ -228,6 +236,21 @@ namespace ScheduleBL
                     throw new DataConflictException(ScheduleItems.Group, sameGroup.Id);
                 }
             }
+
+            /*var matchingBookedLessons = _context.BookedLessons
+                .Where(b =>
+                    (b.Status == ScheduleDAL.Enums.BookStatus.New || b.Status == ScheduleDAL.Enums.BookStatus.Approved) &&
+                    b.Date <= endDate &&
+                    startDate <= b.Date &&
+                    b.Date.DayOfWeek == dayOfWeek &&
+                    b.Timeslot == timeslot &&
+                    b.AudienceId == audienceId)
+                .ToList();
+
+            foreach(var booked in matchingBookedLessons)
+            {
+                booked.Status = ScheduleDAL.Enums.BookStatus.Canceled;
+            }*/
         }
     }
 }

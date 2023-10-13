@@ -16,11 +16,11 @@ builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.Co
 builder.ConfigureAccount();
 builder.ConfigureScheduleServices();
 builder.Services.AddScoped<IAudiencesService, AudiencesService>();
-builder.Services.AddScoped<IBuildingsService, BuildingsService>();
 builder.Services.AddScoped<IGroupsService, GroupsService>();
 builder.Services.AddScoped<ISubjectsService, SubjectsService>();
 builder.Services.AddScoped<IProfessorsService, ProfessorsService>();
 builder.Services.AddScoped<IScheduleEditorService, ScheduleEditorService>();
+builder.Services.AddCors();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.Section));
 builder.Services.AddAuthentication(options =>
 {
@@ -84,6 +84,12 @@ loggerFactory.AddFile(builder.Configuration["Logging:LogFilePath"].ToString());
     app.UseSwagger();
     app.UseSwaggerUI();
 //}
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true)
+    .AllowCredentials());
 
 app.UseHttpsRedirection();
 
